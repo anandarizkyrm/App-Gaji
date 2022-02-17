@@ -14,8 +14,6 @@ $query = "SELECT
 
 //query from db
 $stmt = $conn->query($query);
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
