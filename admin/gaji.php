@@ -2,8 +2,14 @@
 require_once("../auth/auth.php");
 require_once("../config/koneksi.php");
 
-$query = "SELECT K.*, (SELECT J.nama_jabatan FROM jabatan_karyawan JK INNER JOIN jabatan J ON JK.jabatan_id = J.id WHERE karyawan_id = K.id ORDER BY JK.tanggal_mulai DESC LIMIT 1) jabatan_terkini FROM karyawan K";
-
+$query = "SELECT 
+penggajian.id,
+penggajian.tahun,
+penggajian.bulan,
+karyawan.nama_lengkap
+FROM penggajian,
+karyawan
+WHERE penggajian.karyawan_id = karyawan.id";
 
 //query from db
 $stmt = $conn->query($query);
@@ -39,7 +45,7 @@ $stmt = $conn->query($query);
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Data Karyawan </h1>
+                            <h1>Data Gaji </h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
@@ -67,9 +73,9 @@ $stmt = $conn->query($query);
                                             <tr>
                                                 <th>No</th>
                                                 <th>Action</th>
+                                                <th>Tahun Bulan</th>
                                                 <th>Nama Lengkap</th>
-                                                <th>Nik</th>
-                                                <th>Jabatan Terkini </th>
+
 
                                             </tr>
                                         </thead>
@@ -82,14 +88,13 @@ $stmt = $conn->query($query);
 
                                                     <td>
 
-                                                        <a href="karyawan-jabatan.php?id=<?php echo $row["id"]; ?>" class="btn btn-info btn-xs text-light"><i class="fa fa-user-tie"></i> Jabatan</a>
-                                                        <a href="karyawan-bagian.php?id=<?php echo $row["id"]; ?>" class="btn btn-warning btn-xs text-light"><i class="fa fa-trash"></i> Bagian</a>
-                                                        <a href="karyawan-edit.php?id=<?php echo $row["id"]; ?>" class="btn btn-success btn-xs mr-1"><i class="fa fa-edit"></i> Ubah</a>
-                                                        <a href="karyawan-hapus.php?id=<?php echo $row["id"]; ?>" class="btn btn-danger btn-xs text-light" onClick="javascript: return confirm('Apakah yakin ingin menghapus data ini...?');"><i class="fa fa-trash"></i> Hapus</a>
+
+                                                        <a href="gaji-edit.php?id=<?php echo $row["id"]; ?>" class="btn btn-success btn-xs mr-1"><i class="fa fa-edit"></i> Ubah</a>
+                                                        <a href="gaji-hapus.php?id=<?php echo $row["id"]; ?>" class="btn btn-danger btn-xs text-light" onClick="javascript: return confirm('Apakah yakin ingin menghapus data ini...?');"><i class="fa fa-trash"></i> Hapus</a>
                                                     </td>
+                                                    <td><?= $row["tahun"] - $row['bulan']; ?></td>
                                                     <td><?= $row["nama_lengkap"]; ?></td>
-                                                    <td><?= $row["nik"]; ?></td>
-                                                    <td><?= $row["jabatan_terkini"]; ?></td>
+
 
                                                 </tr>
                                             <?php $no++;

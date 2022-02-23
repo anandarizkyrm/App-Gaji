@@ -6,6 +6,10 @@ require_once("../config/koneksi.php");
 
 
 $id = $_GET["id"];
+if (!isset($id)) {
+    header("location:karyawan.php");
+}
+
 $query_jabkar = "SELECT 
 jabatan_karyawan.id,
 jabatan_karyawan.karyawan_id,
@@ -37,36 +41,35 @@ $karyawan_stmt->execute(['id' => $id]);
 $result_karyawan = $karyawan_stmt->fetch();
 
 
-if(isset($_POST["submit"])){
+if (isset($_POST["submit"])) {
 
-//   $nama = filter_input(INPUT_POST, 'nama', FILTER_SANITIZE_STRING );
-//   $nik = filter_input(INPUT_POST, 'nik', FILTER_SANITIZE_STRING );
-  $jabatan = filter_input(INPUT_POST, 'jabatan_id', FILTER_SANITIZE_STRING );
-  $tanggal = filter_input(INPUT_POST, 'tanggal_mulai', FILTER_SANITIZE_STRING );
+    //   $nama = filter_input(INPUT_POST, 'nama', FILTER_SANITIZE_STRING );
+    //   $nik = filter_input(INPUT_POST, 'nik', FILTER_SANITIZE_STRING );
+    $jabatan = filter_input(INPUT_POST, 'jabatan_id', FILTER_SANITIZE_STRING);
+    $tanggal = filter_input(INPUT_POST, 'tanggal_mulai', FILTER_SANITIZE_STRING);
 
-  $query = "INSERT into jabatan_karyawan(karyawan_id, jabatan_id ,tanggal_mulai) VALUES (
+    $query = "INSERT into jabatan_karyawan(karyawan_id, jabatan_id ,tanggal_mulai) VALUES (
     :id, :jabatan, :tanggal)";
-  $stmt = $conn->prepare($query);
+    $stmt = $conn->prepare($query);
 
-  //execute the PDOStatement
-  $saved = $stmt->execute([
-    ":id" => $id,
-    ":jabatan" => $jabatan,
-    ":tanggal" => $tanggal
-  ]);
+    //execute the PDOStatement
+    $saved = $stmt->execute([
+        ":id" => $id,
+        ":jabatan" => $jabatan,
+        ":tanggal" => $tanggal
+    ]);
 
-  if($saved){
-    echo "<script type='text/javascript'>
+    if ($saved) {
+        echo "<script type='text/javascript'>
             alert('Data berhasil disimpan')
             document.location.href='karyawan.php'
           </script>";
-  }else{
-    echo "<script type='text/javascript'>
+    } else {
+        echo "<script type='text/javascript'>
            alert('Data Gagal disimpan')
            document.location.href='karyawan-jabatan.php?id=$id'
            </script>";
-  }
-
+    }
 }
 
 ?>
@@ -95,7 +98,7 @@ if(isset($_POST["submit"])){
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Data Lokasi</h1>
+                            <h1>Jabatan Karyawan</h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
@@ -108,44 +111,44 @@ if(isset($_POST["submit"])){
                 </div><!-- /.container-fluid -->
             </section>
             <section class="content">
-                  <div class="container-fluid">
-                      <div class="row">
-                          <div class="col-md-12">
-                              <!-- general form elements -->
-                              <div class="card card-primary">
-                                  <div class="card-header">
-                                      <h3 class="card-title">Tambah Data</h3>
-                                  </div>
-                                  <!-- /.card-header -->
-                                  <!-- form start -->
-                                  <form action="" method="post">
-                                      <div class="card-body">
-                                          <div class="form-group">
-                                              <label for="nik">Nomor Induk Karyawan:</label>
-                                              <input value="<?= $result_karyawan[1]?>" type="text" class="form-control" id="nik" name="nik" placeholder="Nomor Induk Karyawan" required>  
-                                          </div>
-                                          <div class="form-group">
-                                              <label for="nama">Nama Karyawan:</label>
-                                              <input value="<?= $result_karyawan[2]?>" type="text" class="form-control" id="nama" name="nama" placeholder="Nama Karyawan" required>  
-                                          </div>
-                                          <div class="form-group">
-                                              <label for="jabatan">Pilih Jabatan:</label>
-                                              <select name="jabatan_id" class="form-control">
-                                                  <option>-- Pilih Jabatan --</option>
-                                                  <?php 
-                                                  $query_jabatan = "SELECT * FROM jabatan";
-                                                  $jabatan_stmt = $conn->query($query_jabatan);      
-                                                  while($jabatan = $jabatan_stmt->fetch(PDO::FETCH_ASSOC)){ ?>
-                                                    <option value="<?= $jabatan['id']?>"><?= $jabatan['nama_jabatan']?></option>
-                                                  <?php } ?>
-                                             </select>
-                                          </div>
-                                          <div class="form-group">
-                                              <label for="tanggal_mulai">Tanggal Mulai:</label>
-                                              <input  type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="tanggal mulai" required>  
-                                          </div>
-                        
-                                          <!-- <div class="form-group">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- general form elements -->
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Tambah Data</h3>
+                                </div>
+                                <!-- /.card-header -->
+                                <!-- form start -->
+                                <form action="" method="post">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="nik">Nomor Induk Karyawan:</label>
+                                            <input value="<?= $result_karyawan[1] ?>" type="text" class="form-control" id="nik" name="nik" placeholder="Nomor Induk Karyawan" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nama">Nama Karyawan:</label>
+                                            <input value="<?= $result_karyawan[2] ?>" type="text" class="form-control" id="nama" name="nama" placeholder="Nama Karyawan" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="jabatan">Pilih Jabatan:</label>
+                                            <select name="jabatan_id" class="form-control">
+                                                <option>-- Pilih Jabatan --</option>
+                                                <?php
+                                                $query_jabatan = "SELECT * FROM jabatan";
+                                                $jabatan_stmt = $conn->query($query_jabatan);
+                                                while ($jabatan = $jabatan_stmt->fetch(PDO::FETCH_ASSOC)) { ?>
+                                                    <option value="<?= $jabatan['id'] ?>"><?= $jabatan['nama_jabatan'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tanggal_mulai">Tanggal Mulai:</label>
+                                            <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="tanggal mulai" required>
+                                        </div>
+
+                                        <!-- <div class="form-group">
                                               <label for="select">Select</label>
                                               <select class="form-control" id="select" name="select" required>
                                                   <option value="">-- Pilih Agama --</option>
@@ -156,31 +159,31 @@ if(isset($_POST["submit"])){
                                               <label for="alamat">Textarea</label>
                                               <textarea class="form-control" rows="3" id="alamat" name="alamat" placeholder="Enter ..." required></textarea>
                                           </div> -->
-                                      </div>
-                                      <!-- /.card-body -->
-  
-                                      <div class="card-footer">
-                                          <button type="submit" class="btn btn-primary mr-1" name="submit">Simpan</button>
-                                          <a href="karyawan.php" class="btn btn-secondary">Cancel</a>
-                                      </div>
-                                  </form>
-                              </div>
-                          </div>
-                          <!-- /.col -->
-                      </div>
-                      <!-- /.row -->
-                  </div>
-                  <!-- /.container-fluid -->
-              </section>
+                                    </div>
+                                    <!-- /.card-body -->
+
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary mr-1" name="submit">Simpan</button>
+                                        <a href="karyawan.php" class="btn btn-secondary">Cancel</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.container-fluid -->
+            </section>
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
                             <div class="card card-primary">
-                                    <div class="card-header">
-                                        <h3 class="card-title">Riwayat Jabatan</h3>
-                                    </div>
+                                <div class="card-header">
+                                    <h3 class="card-title">Riwayat Jabatan</h3>
+                                </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <table id="example1" class="table table-bordered table-striped">
@@ -190,33 +193,34 @@ if(isset($_POST["submit"])){
                                                 <th>Action</th>
                                                 <th>Nama Lengkap</th>
                                                 <th>Tanggal Mulai</th>
-                                             
+
                                             </tr>
                                         </thead>
                                         <tbody>
-                                              <?php
-                                                 $no = 1 ;  
-                                             
-                                                while($row_jabkar = $jabkar_stmt->fetch(PDO::FETCH_ASSOC)) { ?>
-                                                    <tr>
-                                                        <td><?= $no; ?></td>
-                                                        <td>
-                                                            <a href="karyawan-hapus.php?id=<?php echo $row["id"]; ?>" class="btn btn-danger btn-xs text-light" onClick="javascript: return confirm('Apakah yakin ingin menghapus data ini...?');"><i class="fa fa-trash"></i> Hapus</a>
-                                                        </td>
-                                                        
-                                                        <td><?= $row_jabkar["nama_jabatan"]; ?></td>
-                                                        <td><?= $row_jabkar["tanggal_mulai"]; ?></td>
-                                        
-                                                    </tr>
-                                                <?php $no++;  }  ?>
+                                            <?php
+                                            $no = 1;
+
+                                            while ($row_jabkar = $jabkar_stmt->fetch(PDO::FETCH_ASSOC)) { ?>
+                                                <tr>
+                                                    <td><?= $no; ?></td>
+                                                    <td>
+                                                        <a href="karyawan-jabatan-hapus.php?id=<?php echo $row_jabkar["id"]; ?>" class="btn btn-danger btn-xs text-light" onClick="javascript: return confirm('Apakah yakin ingin menghapus data ini...?');"><i class="fa fa-trash"></i> Hapus</a>
+                                                    </td>
+
+                                                    <td><?= $row_jabkar["nama_jabatan"]; ?></td>
+                                                    <td><?= $row_jabkar["tanggal_mulai"]; ?></td>
+
+                                                </tr>
+                                            <?php $no++;
+                                            }  ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                            <th>No</th>
+                                                <th>No</th>
                                                 <th>Action</th>
                                                 <th>Nama Lengkap</th>
                                                 <th>Tanggal Mulai</th>
-                                           
+
                                             </tr>
                                         </tfoot>
                                     </table>
