@@ -64,7 +64,7 @@ $stmt = $conn->query($query);
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <a href="karyawan-tambah.php" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Tambah Data</a>
+                                    <a href="gaji-tambah.php" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Tambah Data</a>
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -92,7 +92,7 @@ $stmt = $conn->query($query);
                                                         <a href="gaji-edit.php?id=<?php echo $row["id"]; ?>" class="btn btn-success btn-xs mr-1"><i class="fa fa-edit"></i> Ubah</a>
                                                         <a href="gaji-hapus.php?id=<?php echo $row["id"]; ?>" class="btn btn-danger btn-xs text-light" onClick="javascript: return confirm('Apakah yakin ingin menghapus data ini...?');"><i class="fa fa-trash"></i> Hapus</a>
                                                     </td>
-                                                    <td><?= $row["tahun"] - $row['bulan']; ?></td>
+                                                    <td><?= $row["tahun"], '-', $row["bulan"]; ?></td>
                                                     <td><?= $row["nama_lengkap"]; ?></td>
 
 
@@ -104,10 +104,8 @@ $stmt = $conn->query($query);
                                             <tr>
                                                 <th>No</th>
                                                 <th>Action</th>
-                                                <th>Nama Jabatan</th>
-                                                <th>Gapok</th>
-                                                <th>Tunjangan</th>
-
+                                                <th>Tahun Bulan</th>
+                                                <th>Nama Lengkap</th>
                                             </tr>
                                         </tfoot>
                                     </table>

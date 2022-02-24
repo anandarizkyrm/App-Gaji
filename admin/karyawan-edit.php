@@ -4,8 +4,8 @@ require_once("../config/koneksi.php");
 
 $id = $_GET["id"];
 
-$query = "SELECT * FROM karyawan WHERE id = :id ";
-$oldstmt = $conn->prepare($query);
+$query1 = "SELECT * FROM karyawan WHERE id = :id ";
+$oldstmt = $conn->prepare($query1);
 
 $oldstmt->execute(['id' => $id]);
 
@@ -26,33 +26,33 @@ if (isset($_POST["submit"])) {
     // $pengguna_id = filter_input(INPUT_POST, 'pengguna_id', FILTER_SANITIZE_STRING);
 
 
-    $query = "UPDATE jabatan SET nik = :nkar,  nama_lengkap = :nama_lengkap , handphone = :handphone, email = :email WHERE id = $id";
+    $query = "UPDATE karyawan SET nik = :nik,  nama_lengkap = :nama_lengkap , handphone = :handphone, email = :email, pengguna_id = :pengguna_id
+     WHERE id = $id";
 
     $stmt = $conn->prepare($query);
 
     //execute the PDOStatement
 
     $saved = $stmt->execute([
-        ":nkar" => $nik,
+        ":nik" => $nik,
         ":nama_lengkap" => $nama,
         ":handphone" => $handphone,
         ":email" => $email,
         ":pengguna_id" => isset($pengguna_id) ? $pengguna_id : NULL
     ]);
 
-    echo $nik, "+", $nama, "+", $handphone,  "+", $email,  "+", $tanggal_masuk, "+";
-
+    echo $nik, "+", $nama, "+", $handphone,  "+", $email,  "+", $id;
 
 
     if ($saved) {
         echo "<script type='text/javascript'>
             alert('Data berhasil disimpan')
-            document.location.href='karyawan-tambah.php'
+            document.location.href='karyawan.php'
           </script>";
     } else {
         echo "<script type='text/javascript'>
            alert('Data Gagal disimpan')
-
+             document.location.href='karyawan-edit.php?id=$id'
            </script>";
     }
 }
@@ -111,8 +111,7 @@ if (isset($_POST["submit"])) {
                                     <div class="card-body">
                                         <div class="form-group">
                                             <label for="nik">Nomor Induk Karyawan:</label>
-
-                                            <input type="text" value="<?php echo $oldRes[1] ?> " class=" form-control" name="nik" placeholder="Nomor Induk Karyawan" required>
+                                            <input type="text" value="<?php echo $oldRes[1] ?> " class="form-control" name="nik" placeholder="Nomor Induk Karyawan" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="nama">Nama Karyawan:</label>

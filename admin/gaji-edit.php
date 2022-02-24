@@ -3,44 +3,59 @@ require_once("../auth/auth.php");
 require_once("../config/koneksi.php");
 
 
-$id = $_GET["id"];
+
+$id = $_GET['id'];
+
 $query = "SELECT * FROM penggajian WHERE id = :id ";
-$oldstmt = $conn->prepare($query);
+$stmt = $conn->prepare($query);
+$stmt->execute(['id' => $id]);
 
-$oldstmt->execute(['id' => $id]);
+$value = $stmt->fetch();
 
 
-$oldRes = $oldstmt->fetch();
 
 if (isset($_POST["submit"])) {
 
-    $id = $_GET["id"];
-    $nama = filter_input(INPUT_POST, 'tahun', FILTER_SANITIZE_STRING);
+    $tahun = filter_input(INPUT_POST, 'tahun', FILTER_SANITIZE_STRING);
     $bulan = filter_input(INPUT_POST, 'bulan', FILTER_SANITIZE_STRING);
-    $karyawan = filter_input(INPUT_POST, 'karyawan', FILTER_SANITIZE_STRING);
-    $jabatan_terakhir = filter_input(INPUT_POST, 'jabatan_terakhir', FILTER_SANITIZE_STRING);
+    $karyawan = filter_input(INPUT_POST, 'karyawan_id', FILTER_SANITIZE_STRING);
+    $jabatan_id = filter_input(INPUT_POST, 'jabatan_id', FILTER_SANITIZE_STRING);
 
-    $query = "UPDATE jabatan SET tahun = :tahun,  bulan = :bulan ,tunjangan_jabatan = :karyawan, uang_makan_perhari = :jabatan_terakhir WHERE id = $id";
 
+    $query = "SELECT * FROM jabatan WHERE id = :id ";
+    $oldstmt = $conn->prepare($query);
+
+    $oldstmt->execute(['id' => $jabatan_id]);
+
+    $oldRes = $oldstmt->fetch();
+    $gapok = $oldRes['gapok_jabatan'];
+    $tunjangan = $oldRes['tunjangan_jabatan'];
+    $uang_makan = $oldRes['uang_makan_perhari'];
+
+
+    $query = "UPDATE penggajian SET karyawan_id = :karyawan_id, tahun = :tahun, bulan = :bulan, gapok = :gapok ,tunjangan = :tunjangan, uang_makan = :uang_makan WHERE id = $id";
     $stmt = $conn->prepare($query);
 
     //execute the PDOStatement
     $saved = $stmt->execute([
-        ":tahun" => $nama,
-        ":gapok" => $gapok,
-        ":karyawan" => $karyawan,
-        ":jabatan_terakhir" => $jabatan_terakhir,
+        ':karyawan_id' => $karyawan,
+        ':tahun' => $tahun,
+        ':bulan' => $bulan,
+        ':gapok' => $gapok,
+        ':tunjangan' => $tunjangan,
+        ':uang_makan' => $uang_makan,
     ]);
+
 
     if ($saved) {
         echo "<script type='text/javascript'>
-                alert('Data berhasil disimpan')
-                document.location.href='jabatan.php'
+                alert('Data berhasil diubah')
+                  document.location.href='gaji.php'
             </script>";
     } else {
         echo "<script type='text/javascript'>
-            alert('Data Gagal disimpan')
-            document.location.href='jabatan-edit.php?id=$id'
+            alert('Data Gagal diubah')
+               document.location.href='gaji.php?id=$id'
             </script>";
     }
 }
@@ -51,7 +66,7 @@ if (isset($_POST["submit"])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Lokasi | APPGAJI</title>
+    <title>Data Gaji | APPGAJI</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="../dist/css/adminlte.min.css">
@@ -71,12 +86,12 @@ if (isset($_POST["submit"])) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Data Lokasi</h1>
+                            <h1>Data gaji</h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                                <li class="breadcrumb-item"><a href="lokasi.php">Lokasi</a></li>
+                                <li class="breadcrumb-item"><a href="gaji.php">Gaji</a></li>
                                 <li class="breadcrumb-item active">Tambah Jabatan</li>
                             </ol>
                         </div>
@@ -99,38 +114,92 @@ if (isset($_POST["submit"])) {
                                 <form action="" method="post">
                                     <div class="card-body">
                                         <div class="form-group">
-                                            <label for="nama">Nama Lokasi:</label>
-                                            <input value="<?= $oldRes[1] ?>" type="text" class="form-control" id="nama" name="tahun" placeholder="Nama Jabatan" required>
+                                            <label for="tahun">Tahun :</label>
+                                            <input value="<?= date('Y'); ?>" type="text" class="form-control" id="tahun" name="tahun" placeholder="Masukan Tahun" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="bulan">Bulan</label>
+                                            <select class="form-control" id="bulan" name="bulan" required>
+                                                <option <?php if ($value[3] == "01") {
+                                                            echo "selected";
+                                                        } ?> value="">-- Pilih Bulan --</option>
+                                                <option <?php if ($value[3] == "02") {
+                                                            echo "selected";
+                                                        } ?> value="01">Januari</option>
+                                                <option <?php if ($value[3] == "03") {
+                                                            echo "selected";
+                                                        } ?> value="02">Februari</option>
+                                                <option <?php if ($value[3] == "04") {
+                                                            echo "selected";
+                                                        } ?> value="03">Maret</option>
+                                                <option <?php if ($value[3] == "05") {
+                                                            echo "selected";
+                                                        } ?> value="04">April</option>
+                                                <option <?php if ($value[3] == "06") {
+                                                            echo "selected";
+                                                        } ?> value="05">Mei</option>
+                                                <option <?php if ($value[3] == "07") {
+                                                            echo "selected";
+                                                        } ?> value="06">Juni</option>
+                                                <option <?php if ($value[3] == "08") {
+                                                            echo "selected";
+                                                        } ?> value="07">Juli</option>
+                                                <option <?php if ($value[3] == "09") {
+                                                            echo "selected";
+                                                        } ?> value="08">Agustus</option>
+                                                <option <?php if ($value[3] == "10") {
+                                                            echo "selected";
+                                                        } ?> value="09">September</option>
+                                                <option <?php if ($value[3] == "11") {
+                                                            echo "selected";
+                                                        } ?> value="10">Oktober</option>
+                                                <option <?php if ($value[3] == "12") {
+                                                            echo "selected";
+                                                        } ?> value="11">November</option>
+                                                <option <?php if ($value[3] == "01") {
+                                                            echo "selected";
+                                                        } ?> value="12">Desember</option>
+
+
+
+                                            </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="nama">Gapok Jabatan:</label>
-                                            <input value="<?= $oldRes[2] ?>" type="text" class="form-control" id="nama" name="gapok" placeholder="Gaji Pokok Jabatan" required>
+                                            <label for="bulan">Karyawan</label>
+                                            <select class="form-control" id="karyawan" name="karyawan_id" required>
+                                                <option value="">-- Pilih Karyawan--</option>
+                                                <?php $query = "SELECT * FROM karyawan";
+                                                $stmt = $conn->prepare($query);
+                                                $stmt->execute();
+                                                $result = $stmt->fetchAll();
+                                                foreach ($result as $row) : ?>
+                                                    <option <?php if ($row['id'] == $value[1]) {
+                                                                echo "selected";
+                                                            } ?> value="<?= $row['id']; ?>"><?= $row['nama_lengkap']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+
                                         </div>
                                         <div class="form-group">
-                                            <label for="nama">Tunjangan Jabatan:</label>
-                                            <input value="<?= $oldRes[3] ?>" type="text" class="form-control" id="nama" name="karyawan" placeholder="Tunjangan Jabatan" required>
+                                            <label for="bulan">Jabatan Terakhir</label>
+                                            <select class="form-control" id="jabatan" name="jabatan_id" required>
+                                                <option value="">-- Pilih Jabatan --</option>
+                                                <?php $query = "SELECT * FROM jabatan";
+                                                $stmt = $conn->query($query);
+                                                while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) { ?>
+                                                    <option selected="<?php $row['id'] = $value["karyawan_id"] ? 'selected' : '' ?>" value="<?= $data['id']; ?>"><?= $data['nama_jabatan']; ?></option>
+                                                <?php } ?>
+
+
+                                            </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="nama">Uang Makan Perhari:</label>
-                                            <input value="<?= $oldRes[4] ?>" type="text" class="form-control" id="nama" name="jabatan_terakhir" placeholder="Uang Makan Perhari" required>
-                                        </div>
-                                        <!-- <div class="form-group">
-                                              <label for="select">Select</label>
-                                              <select class="form-control" id="select" name="select" required>
-                                                  <option value="">-- Pilih Agama --</option>
-                                                  <option value="1">1</option>
-                                              </select>
-                                          </div>
-                                          <div class="form-group">
-                                              <label for="alamat">Textarea</label>
-                                              <textarea class="form-control" rows="3" id="alamat" name="alamat" placeholder="Enter ..." required></textarea>
-                                          </div> -->
                                     </div>
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">
                                         <button type="submit" class="btn btn-primary mr-1" name="submit">Simpan</button>
-                                        <a href="lokasi.php" class="btn btn-secondary">Cancel</a>
+                                        <a href="gaji.php" class="btn btn-secondary">Cancel</a>
                                     </div>
                                 </form>
                             </div>
